@@ -113,13 +113,13 @@ app.post("/api/login", async (req, res) => {
 // ✅ Updated Add Product
 app.post("/api/products", verifyToken, uploadMiddleware, async (req, res) => {
   try {
-    if (!req.user.isAdmin) return res.status(403).json({ message: "❌ Unauthorized. Admin access required." })
+    if (!req.user.isAdmin)
+      return res.status(403).json({ message: "❌ Unauthorized. Admin access required." })
 
-    let { name, category, subCategory, description } = req.body
-    price = Number(price)
+    const { name, category, subCategory, description } = req.body
 
-    if (!name || !price || !category || isNaN(price)) {
-      return res.status(400).json({ message: "⚠️ Missing or invalid required fields." })
+    if (!name || !category) {
+      return res.status(400).json({ message: "⚠️ Missing required fields." })
     }
 
     let imageUrl = null
@@ -150,6 +150,9 @@ app.post("/api/products", verifyToken, uploadMiddleware, async (req, res) => {
     res.status(500).json({ message: "❌ Server Error", error: error.message })
   }
 })
+
+
+
 
 app.put("/api/products/:id", verifyToken, uploadMiddleware, async (req, res) => {
   try {
