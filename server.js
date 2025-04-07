@@ -69,7 +69,6 @@ const User = mongoose.model("User", UserSchema)
 
 const ProductSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  price: { type: Number, required: true },
   category: { type: String, required: true },
   subCategory: { type: String },
   description: { type: String },
@@ -116,7 +115,7 @@ app.post("/api/products", verifyToken, uploadMiddleware, async (req, res) => {
   try {
     if (!req.user.isAdmin) return res.status(403).json({ message: "❌ Unauthorized. Admin access required." })
 
-    let { name, price, category, subCategory, description } = req.body
+    let { name, category, subCategory, description } = req.body
     price = Number(price)
 
     if (!name || !price || !category || isNaN(price)) {
@@ -137,7 +136,6 @@ app.post("/api/products", verifyToken, uploadMiddleware, async (req, res) => {
 
     const newProduct = new Product({
       name,
-      price,
       category,
       subCategory,
       description,
@@ -158,7 +156,7 @@ app.put("/api/products/:id", verifyToken, uploadMiddleware, async (req, res) => 
     if (!req.user.isAdmin) return res.status(403).json({ message: "❌ Unauthorized. Admin access required." })
 
     const productId = req.params.id
-    const { name, price, category, subCategory, description } = req.body
+    const { name, category, subCategory, description } = req.body
     const product = await Product.findById(productId)
     if (!product) return res.status(404).json({ message: "❌ Product not found" })
 
@@ -186,7 +184,6 @@ app.put("/api/products/:id", verifyToken, uploadMiddleware, async (req, res) => 
       productId,
       {
         name,
-        price: Number(price),
         category,
         subCategory,
         description,
