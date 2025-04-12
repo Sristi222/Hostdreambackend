@@ -228,18 +228,26 @@ app.delete("/api/products/:id", verifyToken, async (req, res) => {
 
 app.get("/api/products", async (req, res) => {
   try {
-    const limit = req.query.limit ? Number.parseInt(req.query.limit) : 0
-    const query = Product.find()
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 6
+    const skip = (page - 1) * limit
 
-    if (limit > 0) query.limit(limit)
+    const products = await Product.find().skip(skip).limit(limit)
+    const total = await Product.countDocuments()
 
-    const products = await query.exec()
-    res.json(products)
+    res.json({
+      products,
+      total,
+      currentPage: page,
+      totalPages: Math.ceil(total / limit),
+    })
   } catch (error) {
     console.error("❌ Error Fetching Products:", error)
     res.status(500).json({ message: "❌ Server Error", error: error.message })
   }
 })
+
+
 
 app.patch("/api/products/:id", verifyToken, async (req, res) => {
   try {
